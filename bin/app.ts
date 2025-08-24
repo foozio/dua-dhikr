@@ -10,7 +10,7 @@ const app = async () => {
     await app.register(import('@fastify/compress'))
     await app.register(import('@fastify/etag'))
     await app.register(import('@fastify/accepts'))
-    await app.register(import('@fastify/rate-limit'), { max: 2, timeWindow: '1 second' })
+    // await app.register(import('@fastify/rate-limit'), { max: 2, timeWindow: '1 second' })
     await app.register(import('../start/core'))
 
     app.setNotFoundHandler((_request, reply) => {
@@ -18,13 +18,13 @@ const app = async () => {
     })
 
     app.setErrorHandler((error, _request, reply) => {
-      if (error.statusCode === 429) {
-        return reply.status(429).send({
-          statusCode: 429,
-          code: 'TOO_MANY_REQUESTS',
-          message: 'Request limit: 2x per second.',
-        })
-      }
+      // if (error.statusCode === 429) {
+      //   return reply.status(429).send({
+      //     statusCode: 429,
+      //     code: 'TOO_MANY_REQUESTS',
+      //     message: 'Request limit: 2x per second.',
+      //   })
+      // }
 
       return reply.status(500).send({
         statusCode: 500,

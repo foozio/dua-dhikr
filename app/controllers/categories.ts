@@ -55,18 +55,31 @@ export const detail = (app: FastifyInstance) => {
   ) => {
     const language = request.languages()?.[0] || 'id'
     const { slug, id } = request.params
-    const category = (app.data.categories[language] as CategoryType[]).find((i) => i.slug === slug)
     const index = Number(id) - 1
+
+    // Check if the language exists in categories
+    if (!(language in app.data.categories)) {
+      return sendBadRequest(reply, 'The language you requested is not available yet.')
+    }
+
+    const category = (app.data.categories[language] as CategoryType[]).find((i) => i.slug === slug)
 
     if (!category || !(slug in app.data.items)) {
       return sendNotFound(reply)
     }
 
-    if (!(language in app.data.items[slug]) || !(index in app.data.items[slug][language])) {
+    // Check if the language exists for this category
+    if (!(language in app.data.items[slug])) {
       return sendBadRequest(reply, 'The language you requested is not available yet.')
     }
 
-    const item = app.data.items[slug][language][index]
+    const items = app.data.items[slug][language]
+
+    if (!(index in items)) {
+      return sendNotFound(reply)
+    }
+
+    const item = items[index]
     const response = createSpecResponse({
       id: Number(id),
       title: item.title,
